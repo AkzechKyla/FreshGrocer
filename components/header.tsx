@@ -2,7 +2,15 @@ import Link from "next/link"
 import { Search, User, ShoppingCart, Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 
 export default function Header() {
@@ -30,20 +38,54 @@ export default function Header() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/category/fruits-vegetables">Fruits & Vegetables</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/category/dairy-eggs">Dairy & Eggs</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link href="/category/meat-fish">Meat & Fish</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>Dairy & Eggs</DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem asChild>
+                      <Link href="/category/dairy-eggs/milk">Milk</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/category/dairy-eggs/cheese">Cheese</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/category/dairy-eggs/yogurt">Yogurt</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/category/dairy-eggs/eggs">Eggs</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>Meat & Fish</DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem asChild>
+                      <Link href="/category/meat-fish/beef">Beef</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/category/meat-fish/chicken">Chicken</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/category/meat-fish/pork">Pork</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/category/meat-fish/seafood">Seafood</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                <DropdownMenuItem asChild>
                   <Link href="/category/bakery">Bakery</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/category/pantry">Pantry Essentials</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/category/beverages">Beverages</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/category/snacks">Snacks</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
