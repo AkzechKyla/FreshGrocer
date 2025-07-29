@@ -1,6 +1,7 @@
 import Header from "../components/header"
 import Footer from "../components/footer"
 import HeroSliders from "../components/hero-sliders"
+import CategoryList from "../components/category-list"
 
 export default function Page() {
   return (
@@ -8,9 +9,11 @@ export default function Page() {
       <Header />
       <main className="flex-1">
         <HeroSliders />
+        <CategoryList />
         <section className="container mx-auto px-4 py-8">
-          <h1>Welcome to FreshGrocer</h1>
-          <p>Explore our wide range of products and services.</p>
+          {/* Placeholder for other homepage content */}
+          <h2 className="text-2xl font-bold mb-4">Featured Products</h2>
+          <p>More content will go here.</p>
         </section>
       </main>
       <Footer />
