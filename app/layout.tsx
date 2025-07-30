@@ -5,7 +5,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Fresh Grocer',
-  description: 'FreshGrocer is your go-to online grocery store, delivering farm-fresh produce, pantry essentials, and household needs straight to your doorstep—fast, affordable, and always fresh.'
+  description: 'FreshGrocer is your go-to online grocery store, delivering farm-fresh produce, pantry essentials, and household needs straight to your doorstep—fast, affordable, and always fresh.',
 }
 
 export default function RootLayout({
