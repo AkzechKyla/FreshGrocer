@@ -4,9 +4,8 @@ import { GeistMono } from 'geist/font/mono'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'Fresh Grocer',
+  description: 'FreshGrocer is your go-to online grocery store, delivering farm-fresh produce, pantry essentials, and household needs straight to your doorstep—fast, affordable, and always fresh.',
 }
 
 export default function RootLayout({
