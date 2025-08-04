@@ -1,3 +1,5 @@
+import qs from "qs"
+
 const STRAPI_API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL
 
 if (!STRAPI_API_URL) {
@@ -11,10 +13,15 @@ if (!STRAPI_API_URL) {
  * @returns A Promise that resolves to the fetched data.
  */
 export async function fetchStrapiData<T>(path: string, params: Record<string, any> = {}): Promise<T> {
-  const queryString = new URLSearchParams(params).toString()
+  const queryString = qs.stringify(params, {
+    encodeValuesOnly: true, // avoids encoding brackets
+  })
+
   const requestUrl = `${STRAPI_API_URL}/api/${path}${queryString ? `?${queryString}` : ""}`
 
   try {
+    console.log("Fetching from: ", requestUrl)
+    console.log("🧾 Params passed to fetchStrapiData:", params)
     const response = await fetch(requestUrl, {
       headers: {
         "Content-Type": "application/json",
