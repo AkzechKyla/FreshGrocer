@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
@@ -5,64 +7,68 @@ import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ChevronDown, LayoutGrid, List, Plus } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { useStrapiData } from "@/hooks/use-strapi-data"
+import type { Product } from "@/types/strapi"
+import { getFullImageUrl } from "@/lib/utils"
 
 export default function ProductList() {
-  const products = [
+  const { data, isLoading, isError } = useStrapiData<Product>(
+    ["products"],
+    "products",
     {
-      id: "1",
-      name: "Organic Apples",
-      description: "Crisp and sweet, perfect for snacking.",
-      price: 3.99,
-      image: "/placeholder.svg?height=200&width=200",
-      category: "Fruits & Vegetables",
-      brand: "Fresh Farms",
-    },
-    {
-      id: "2",
-      name: "Whole Milk (1 Gallon)",
-      description: "Fresh, pasteurized whole milk.",
-      price: 4.5,
-      image: "/placeholder.svg?height=200&width=200",
-      category: "Dairy & Eggs",
-      brand: "Dairy Delights",
-    },
-    {
-      id: "3",
-      name: "Boneless Chicken Breast",
-      description: "Lean and tender, great for grilling.",
-      price: 12.99,
-      image: "/placeholder.svg?height=200&width=200",
-      category: "Meat & Fish",
-      brand: "Butcher's Best",
-    },
-    {
-      id: "4",
-      name: "Artisan Sourdough Bread",
-      description: "Freshly baked, crusty sourdough.",
-      price: 5.25,
-      image: "/placeholder.svg?height=200&width=200",
-      category: "Bakery",
-      brand: "Local Bakehouse",
-    },
-    {
-      id: "5",
-      name: "Organic Brown Eggs (Dozen)",
-      description: "Farm-fresh, large brown eggs.",
-      price: 4.2,
-      image: "/placeholder.svg?height=200&width=200",
-      category: "Dairy & Eggs",
-      brand: "Happy Hens",
-    },
-    {
-      id: "6",
-      name: "Wild Caught Salmon Fillet",
-      description: "Rich in Omega-3s, responsibly sourced.",
-      price: 18.75,
-      image: "/placeholder.svg?height=200&width=200",
-      category: "Meat & Fish",
-      brand: "Ocean's Bounty",
-    },
-  ]
+      populate: {
+        description: true,
+        image: {
+          populate: {
+            file: true,
+          },
+        },
+        category: true,
+      },
+    }
+  )
+
+  if (isLoading) {
+    return (
+      <section className="w-full py-8 md:py-12 lg:py-16 flex justify-center items-center">
+        <p>Loading products...</p>
+      </section>
+    )
+  }
+
+  if (isError || !data || !Array.isArray(data.data)) {
+    console.error("Failed to load products:", isError ? "Error fetching data" : "No data or invalid data format")
+    return (
+      <section className="w-full py-8 md:py-12 lg:py-16 flex justify-center items-center">
+        <p className="text-red-500">Failed to load products. Please try again later.</p>
+      </section>
+    )
+  }
+
+  const products = data.data.map((item: { id: number, attributes: Product }) => {
+    const product = item.attributes ?? item
+    const imageFile = product.image?.file
+
+    return {
+      id: item.id,
+      name: product.name,
+      slug: product.slug,
+      price: product.price,
+      brand: product.brand ?? "Unbranded",
+      description: product.description?.body ?? "",
+      category: product.category?.name ?? "Uncategorized",
+      imageUrl: getFullImageUrl(imageFile?.formats?.medium?.url || imageFile?.url),
+      alt: imageFile?.alternativeText ?? product.name ?? "Product image",
+    }
+  })
+
+  if (products.length === 0) {
+    return (
+      <section className="w-full py-8 md:py-12 lg:py-16 flex justify-center items-center">
+        <p className="text-gray-500">No products available.</p>
+      </section>
+    )
+  }
 
   return (
     <section className="w-full py-8 md:py-12 lg:py-16">
@@ -121,11 +127,11 @@ export default function ProductList() {
               key={product.id}
               className="overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
             >
-              <Link href={`/product/${product.id}`} className="block">
+              <Link href={`/product/${product.slug || product.id}`} className="block">
                 <div className="relative w-full h-48 overflow-hidden">
                   <Image
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
+                    src={product.imageUrl}
+                    alt={product.alt}
                     layout="fill"
                     objectFit="cover"
                     className="transition-transform duration-300 group-hover:scale-105"
@@ -134,13 +140,13 @@ export default function ProductList() {
               </Link>
               <CardContent className="p-4">
                 <h3 className="text-lg font-semibold mb-1">
-                  <Link href={`/product/${product.id}`} className="hover:text-green-600 transition-colors">
+                  <Link href={`/product/${product.slug || product.id}`} className="hover:text-green-600 transition-colors">
                     {product.name}
                   </Link>
                 </h3>
                 <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
+                  <span className="text-xl font-bold text-gray-900">${product.price?.toFixed(2)}</span>
                   <Button className="bg-green-600 hover:bg-green-700 text-white">
                     <Plus className="h-4 w-4 mr-2" />
                     Add to Cart
