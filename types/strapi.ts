@@ -1,4 +1,4 @@
-export type ProductStrapiResponse = {
+export type ProductResponse = {
   data: Product[]
   meta: {
     pagination: {
@@ -84,4 +84,35 @@ export type Category = {
   createdAt: string
   updatedAt: string
   publishedAt: string
+}
+
+export interface SliderResponse {
+  data: Slider[];
+  meta: {
+    pagination: {
+      page: number;
+      pageSize: number;
+      pageCount: number;
+      total: number;
+    };
+  };
+}
+
+export interface Slider {
+  id: number;
+  documentId: string;
+  title: string;
+  ctaText: string;
+  ctaLink: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  description: {
+    id: number;
+    body: string;
+  };
+  image: {
+    id: number;
+    file: ImageFile;
+  };
 }
