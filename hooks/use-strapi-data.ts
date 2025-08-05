@@ -6,7 +6,7 @@ import type { StrapiResponse } from "@/types/strapi"
  * Options for fetching data from Strapi.
  */
 interface UseStrapiDataOptions {
-  populate?: string | string[] // Fields to populate (e.g., 'image', 'category.image')
+  populate?: Record<string, any> // Fields to populate
   filters?: Record<string, any> // Filters for the query
   sort?: string | string[] // Sorting criteria (e.g., 'createdAt:desc')
   pagination?: {
