@@ -56,7 +56,7 @@ export default function HeroSliders() {
       description: slide.description?.body ?? "",
       ctaText: slide.ctaText ?? "Learn more",
       ctaLink: slide.ctaLink ?? "#",
-      imageUrl: getFullImageUrl(imageFile?.formats?.medium?.url ?? imageFile?.url ?? "/placeholder.svg"),
+      imageUrl: getFullImageUrl(imageFile?.formats?.medium?.url ?? imageFile?.url ?? ""),
       alt: imageFile?.alternativeText ?? slide.title ?? "Slide image",
     };
   });
@@ -85,7 +85,7 @@ export default function HeroSliders() {
                   <Card className="relative overflow-hidden rounded-lg shadow-lg">
                     <CardContent className="flex aspect-video items-center justify-center p-0">
                       <Image
-                        src={slide.imageUrl}
+                        src={slide.imageUrl || "/placeholder.svg"}
                         alt={slide.alt}
                         width={1200}
                         height={600}

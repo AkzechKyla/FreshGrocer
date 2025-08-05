@@ -57,7 +57,7 @@ export default function ProductList() {
       brand: product.brand ?? "Unbranded",
       description: product.description?.body ?? "",
       category: product.category?.name ?? "Uncategorized",
-      imageUrl: getFullImageUrl(imageFile?.formats?.medium?.url || imageFile?.url),
+      imageUrl: getFullImageUrl(imageFile?.formats?.medium?.url ?? imageFile?.url),
       alt: imageFile?.alternativeText ?? product.name ?? "Product image",
     }
   })
@@ -130,7 +130,7 @@ export default function ProductList() {
               <Link href={`/product/${product.slug || product.id}`} className="block">
                 <div className="relative w-full h-48 overflow-hidden">
                   <Image
-                    src={product.imageUrl}
+                    src={product.imageUrl || "/placeholder.svg"}
                     alt={product.alt}
                     layout="fill"
                     objectFit="cover"
