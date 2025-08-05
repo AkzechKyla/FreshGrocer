@@ -1,15 +1,3 @@
-export type ProductResponse = {
-  data: Product[]
-  meta: {
-    pagination: {
-      page: number
-      pageSize: number
-      pageCount: number
-      total: number
-    }
-  }
-}
-
 export type Product = {
   id: number
   documentId: string
@@ -85,46 +73,34 @@ export type Category = {
   updatedAt: string
   publishedAt: string
   image?: {
-    id: number;
-    file: ImageFile;
-  };
-}
-
-export interface SliderResponse {
-  data: Slider[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
+    id: number
+    file: ImageFile
+  }
 }
 
 export interface Slider {
-  id: number;
-  documentId: string;
-  title: string;
-  ctaText: string;
-  ctaLink: string;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
+  id: number
+  documentId: string
+  title: string
+  ctaText: string
+  ctaLink: string
+  createdAt: string
+  updatedAt: string
+  publishedAt: string
   description: {
-    id: number;
-    body: string;
-  };
+    id: number
+    body: string
+  }
   image: {
-    id: number;
-    file: ImageFile;
-  };
+    id: number
+    file: ImageFile
+  }
 }
 
-export type CategoryResponse = {
-  data: Category[]
+export type StrapiResponse<T> = {
+  data: T[]
   meta: {
-    pagination: {
+    pagination?: {
       page: number
       pageSize: number
       pageCount: number
@@ -132,3 +108,7 @@ export type CategoryResponse = {
     }
   }
 }
+
+export type ProductResponse = StrapiResponse<Product>
+export type SliderResponse = StrapiResponse<Slider>
+export type CategoryResponse = StrapiResponse<Category>
