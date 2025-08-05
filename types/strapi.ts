@@ -84,6 +84,10 @@ export type Category = {
   createdAt: string
   updatedAt: string
   publishedAt: string
+  image?: {
+    id: number;
+    file: ImageFile;
+  };
 }
 
 export interface SliderResponse {
@@ -115,4 +119,16 @@ export interface Slider {
     id: number;
     file: ImageFile;
   };
+}
+
+export type CategoryResponse = {
+  data: Category[]
+  meta: {
+    pagination: {
+      page: number
+      pageSize: number
+      pageCount: number
+      total: number
+    }
+  }
 }
