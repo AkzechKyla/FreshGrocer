@@ -17,7 +17,6 @@ export default function ProductList() {
     "products",
     {
       populate: {
-        description: true,
         image: {
           populate: {
             file: true,
@@ -45,20 +44,19 @@ export default function ProductList() {
     )
   }
 
-  const products = data.data.map((item: { id: number, attributes: Product }) => {
-    const product = item.attributes ?? item
-    const imageFile = product.image?.file
+  const products = data.data.map((item: Product) => {
+    const firstImageFile = item.image?.[0]?.file
 
     return {
       id: item.id,
-      name: product.name,
-      slug: product.slug,
-      price: product.price,
-      brand: product.brand ?? "Unbranded",
-      description: product.description?.body ?? "",
-      category: product.category?.name ?? "Uncategorized",
-      imageUrl: getFullImageUrl(imageFile?.formats?.medium?.url ?? imageFile?.url),
-      alt: imageFile?.alternativeText ?? product.name ?? "Product image",
+      name: item.name,
+      slug: item.slug,
+      price: item.price,
+      brand: item.brand ?? "Unbranded",
+      short_description: item.short_description ?? "",
+      category: item.category?.name ?? "Uncategorized",
+      imageUrl: getFullImageUrl(firstImageFile?.formats?.medium?.url ?? firstImageFile?.url),
+      alt: firstImageFile?.alternativeText ?? item.name ?? "Product image",
     }
   })
 
@@ -127,7 +125,7 @@ export default function ProductList() {
               key={product.id}
               className="overflow-hidden rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
             >
-              <Link href={`/product/${product.slug || product.id}`} className="block">
+              <Link href={`/product/${product.id}`} className="block">
                 <div className="relative w-full h-48 overflow-hidden">
                   <Image
                     src={product.imageUrl || "/placeholder.svg"}
@@ -140,11 +138,11 @@ export default function ProductList() {
               </Link>
               <CardContent className="p-4">
                 <h3 className="text-lg font-semibold mb-1">
-                  <Link href={`/product/${product.slug || product.id}`} className="hover:text-green-600 transition-colors">
+                  <Link href={`/product/${product.id}`} className="hover:text-green-600 transition-colors">
                     {product.name}
                   </Link>
                 </h3>
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                <p className="text-sm text-gray-600 mb-3 line-clamp-2">{product.short_description}</p>
                 <div className="flex items-center justify-between">
                   <span className="text-xl font-bold text-gray-900">${product.price?.toFixed(2)}</span>
                   <Button className="bg-green-600 hover:bg-green-700 text-white">
