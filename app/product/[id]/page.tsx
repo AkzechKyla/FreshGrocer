@@ -5,42 +5,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Star } from "lucide-react"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
-import type { Product, ProductResponse } from "@/types/strapi"
-import { fetchStrapiData } from "@/lib/strapi"
-import { getFullImageUrl } from "@/lib/utils"
+import { ProductService } from "@/services/ProductService"
+import { ProductModel } from "@/models/ProductModel"
 
 export default async function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const productService = new ProductService()
 
-  let product: Product | null = null
-  let error: string | null = null
+  let productData = null
+  let error = null
 
   try {
-    const productResponse = await fetchStrapiData<ProductResponse>("products", {
-      filters: { id: id },
-      populate: {
-        long_description: true,
-        nutrition_info: true,
-        image: {
-          populate: {
-            file: true,
-          },
-        },
-        category: true,
-        reviews: true,
-      },
-    })
-
-    console.log("productResponse:", productResponse);
-
-    // Strapi returns an array for collection types, even with filters
-    if (Array.isArray(productResponse.data) && productResponse.data.length > 0) {
-      product = productResponse.data[0]
-    } else {
+    const product = await productService.getProductById(id)
+    if (!product) {
       error = "Product not found."
+    } else {
+      productData = new ProductModel(product)
     }
-  } catch (err) {
-    console.error("Error fetching product details:", err)
+  } catch (e) {
+    console.error("Error fetching product details:", e)
     error = "Failed to load product details. Please try again later."
   }
 
@@ -57,7 +40,7 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
     )
   }
 
-  if (!product) {
+  if (!productData) {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
@@ -70,17 +53,6 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
     )
   }
 
-  const mainImageUrl = getFullImageUrl(product?.image?.[0]?.file?.url) || "/placeholder.svg?height=400&width=400"
-  const galleryImagesUrl =
-    product?.image?.slice(1)?.map((img: any) =>
-      getFullImageUrl(img.file?.url)
-    ) || []
-  const allImagesUrl = [mainImageUrl, ...galleryImagesUrl]
-
-  const longDescription = product?.long_description?.body ?? ""
-  const nutritionInfo = product?.nutrition_info?.body ?? ""
-  const reviews = product?.reviews ?? []
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -90,8 +62,8 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
           <div className="flex flex-col items-center">
             <div className="relative w-full max-w-md aspect-square rounded-lg overflow-hidden mb-4">
               <Image
-                src={allImagesUrl[0] || "/placeholder.svg"}
-                alt={product.name}
+                src={productData.mainImageUrl || "/placeholder.svg"}
+                alt={productData.name}
                 layout="fill"
                 objectFit="cover"
                 className="rounded-lg"
@@ -99,11 +71,11 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
               />
             </div>
             <div className="grid grid-cols-4 gap-2 w-full max-w-md">
-              {allImagesUrl.map((img, index) => (
+              {productData.allImages.map((img, index) => (
                 <div key={index} className="relative aspect-square rounded-md overflow-hidden cursor-pointer">
                   <Image
                     src={img || "/placeholder.svg"}
-                    alt={`${product.name} - view ${index + 1}`}
+                    alt={`${productData.name} - view ${index + 1}`}
                     layout="fill"
                     objectFit="cover"
                     className="hover:opacity-75 transition-opacity"
@@ -115,27 +87,22 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
 
           {/* Product Information */}
           <div className="flex flex-col">
-            <h1 className="text-3xl md:text-4xl font-bold mb-2">{product.name}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-2">{productData.name}</h1>
             <div className="flex items-center mb-4">
               <div className="flex text-yellow-500">
-                {/* Fill stars according to API value */}
-                {Array.from({ length: Math.round(product.average_rating ?? 0) }).map((_, i) => (
-                  <Star key={i} className="h-5 w-5 fill-current" />
-                ))}
-                {Array.from({ length: 5 - Math.round(product.average_rating ?? 0) }).map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-gray-300" />
-                ))}
+                {Array.from({ length: productData.ratingStars }).map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
+                {Array.from({ length: 5 - productData.ratingStars }).map((_, i) => <Star key={i} className="h-5 w-5 text-gray-300" />)}
               </div>
               <span className="ml-2 text-sm text-gray-600">
-                ({reviews.length} Review{reviews.length !== 1 ? "s" : ""})
+                ({productData.reviews.length} Review{productData.reviews.length !== 1 ? "s" : ""})
               </span>
             </div>
-            <p className="text-4xl font-bold text-green-700 mb-4">${product.price?.toFixed(2) ?? "0.00"}</p>
-            <p className="text-lg text-gray-800 mb-6">{product.short_description}</p>
+            <p className="text-4xl font-bold text-green-700 mb-4">{productData.priceFormatted}</p>
+            <p className="text-lg text-gray-800 mb-6">{productData.shortDescription}</p>
 
             <div className="flex items-center mb-6">
               <span className="font-semibold text-gray-700 mr-2">Availability:</span>
-              <span className="text-green-600 font-medium">{product.stock_status}</span>
+              <span className="text-green-600 font-medium">{productData.stockStatus}</span>
             </div>
 
             {/* Quantity Selector and Add to Cart */}
@@ -163,17 +130,17 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
               </TabsList>
               <TabsContent value="description" className="mt-4 text-gray-700 leading-relaxed">
                 <h3 className="font-semibold mb-2">Description:</h3>
-                <p>{longDescription}</p>
+                <p>{productData.longDescription}</p>
               </TabsContent>
               <TabsContent value="nutrition" className="mt-4 text-gray-700 leading-relaxed whitespace-pre-wrap">
                 <h3 className="font-semibold mb-2">Nutritional Information:</h3>
-                <p>{nutritionInfo}</p>
+                <p>{productData.nutritionInfo}</p>
               </TabsContent>
               <TabsContent value="reviews" className="mt-4">
                 <h3 className="font-semibold mb-4">Customer Reviews:</h3>
-                {reviews.length > 0 ? (
+                {productData.reviews.length > 0 ? (
                   <div className="space-y-4">
-                    {reviews.map((review: any, index: number) => (
+                    {productData.reviews.map((review: any, index: number) => (
                       <div key={index} className="border-b pb-4 last:border-b-0">
                         <div className="flex items-center mb-1">
                           <div className="flex text-yellow-500">
