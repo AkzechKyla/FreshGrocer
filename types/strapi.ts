@@ -8,14 +8,30 @@ export type Product = {
   createdAt: string
   updatedAt: string
   publishedAt: string
-  description: Description
-  image: ProductImage
+  stock_status: "In Stock" | "Out of Stock"
+  average_rating: number
+  short_description: string
+  long_description: Description
+  nutrition_info: Description
+  image: ProductImage[]
+  reviews: Review[]
   category: Category
 }
 
 export type Description = {
   id: number
   body: string
+}
+
+export type Review = {
+  id: number
+  documentId: string
+  author_name: string
+  rating: number
+  comment: string
+  createdAt: string
+  updatedAt: string
+  publishedAt: string
 }
 
 export type ProductImage = {
@@ -60,7 +76,7 @@ export type ImageFormat = {
   width: number
   height: number
   size: number
-  sizeInBytes?: number
+  sizeInBytes: number
   url: string
 }
 
@@ -98,7 +114,7 @@ export interface Slider {
 }
 
 export type StrapiResponse<T> = {
-  data: T[]
+  data: T | T[]
   meta: {
     pagination?: {
       page: number
