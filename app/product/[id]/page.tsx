@@ -7,6 +7,7 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 import { ProductService } from "@/services/ProductService"
 import { ProductModel } from "@/models/ProductModel"
+import ReactMarkdown from "react-markdown"
 
 export default async function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -130,11 +131,11 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
               </TabsList>
               <TabsContent value="description" className="mt-4 text-gray-700 leading-relaxed">
                 <h3 className="font-semibold mb-2">Description:</h3>
-                <p>{productData.longDescription}</p>
+                <ReactMarkdown>{productData.longDescription}</ReactMarkdown>
               </TabsContent>
               <TabsContent value="nutrition" className="mt-4 text-gray-700 leading-relaxed whitespace-pre-wrap">
                 <h3 className="font-semibold mb-2">Nutritional Information:</h3>
-                <p>{productData.nutritionInfo}</p>
+                <ReactMarkdown>{productData.nutritionInfo}</ReactMarkdown>
               </TabsContent>
               <TabsContent value="reviews" className="mt-4">
                 <h3 className="font-semibold mb-4">Customer Reviews:</h3>
